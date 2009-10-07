@@ -74,7 +74,7 @@ module Rack
       @rewindable_io.chmod(0000)
       @rewindable_io.set_encoding(Encoding::BINARY) if @rewindable_io.respond_to?(:set_encoding)
       @rewindable_io.binmode
-      if filesystem_has_posix_semantics?
+      if ruby_before_1_9_1? && filesystem_has_posix_semantics?
         @rewindable_io.unlink
         @unlinked = true
       end
@@ -95,6 +95,10 @@ module Rack
     
     def filesystem_has_posix_semantics?
       RUBY_PLATFORM !~ /(mswin|mingw|cygwin|java)/
+    end
+
+    def ruby_before_1_9_1?
+      RUBY_VERSION < "1.9.1"
     end
   end
 end
